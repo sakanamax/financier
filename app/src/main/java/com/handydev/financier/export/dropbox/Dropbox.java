@@ -92,13 +92,14 @@ public class Dropbox {
                 DbxRequestConfig requestConfig = DbxRequestConfig.newBuilder("Financier")
                         .withHttpRequestor(new OkHttp3Requestor(OkHttp3Requestor.defaultOkHttpClient()))
                         .build();
-                // If the token is short, it's likely a refresh token, otherwise it's an access token.
+                // ── 判斷 Token 類型並建立憑證 ──
+                // 目的：根據儲存的 Token 長度，自動判斷是舊版的 Access Token 還是新版 PKCE 的 Refresh Token。
+                // 原因：Dropbox SDK 升級後支援 PKCE，但為了相容舊用戶已儲存的長效 Token，在此利用長度做 fallback 判斷。
+                // 注意：此區段涉及使用者 Dropbox 的敏感授權憑證，嚴禁在此處印出 Token 的內容！
                 com.dropbox.core.oauth.DbxCredential credential;
                 if (token.length() < 50) {
-                    // typical length of refresh token is 45 chars
                     credential = new com.dropbox.core.oauth.DbxCredential("dummy_token", -1L, token, APP_KEY);
                 } else {
-                    // long-lived access token fallback
                     credential = new com.dropbox.core.oauth.DbxCredential(token, -1L, null, APP_KEY);
                 }
                 dropboxClient = new DbxClientV2(requestConfig, credential);

@@ -158,11 +158,15 @@ class GoogleDriveClient(var context: Context) {
 
 
     fun uploadFile(file: File) {
+        // ── 上傳本地檔案至 Google Drive ──
+        // 目的：讀取本地檔案內容並透過 Google Drive API 上傳至雲端。
+        // 原因：原本此方法實作為空，導致上傳的備份檔都是 0 bytes 的空檔案，因此必須補上讀取 bytes 與上傳的邏輯。
+        // 注意：此處使用 readBytes() 會將完整檔案讀入記憶體，目前備份檔不大，但若未來檔案過大需注意 OOM 風險。
         if (connect()) {
             val bytes = file.readBytes()
             val status = createFile(file.name, bytes)
             if (!status) {
-                throw ImportExportException(R.string.dropbox_error) // Or a Google Drive specific string if it exists
+                throw ImportExportException(R.string.dropbox_error)
             }
         } else {
             throw Exception("Failed to connect to Google Drive")
