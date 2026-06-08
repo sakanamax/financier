@@ -132,6 +132,10 @@ def AAVersion = '4.7.0'
 def eventbus_version = '3.3.1'
 def acraVersion = "5.8.4"
 
+configurations.configureEach {
+    exclude group: 'com.google.guava', module: 'listenablefuture'
+}
+
 dependencies {
     implementation("ch.acra:acra-http:$acraVersion")
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'

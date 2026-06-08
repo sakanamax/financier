@@ -61,6 +61,25 @@
 - 在 root 與 app Gradle repositories 加入 `https://verve.jfrog.io/artifactory/verve-gradle-release/`。
 後續：提交 repository 修正並推送，觀察第三次 GitHub Actions run 是否成功產出 `untiedDebug` APK artifact。
 
+## 2026-06-08：GitHub Actions legacy dependency 修正後第三次驗證失敗
+
+環境：GitHub Actions `ubuntu-latest` runner；本地使用 `gh run watch` 與 `gh run view --log-failed` 觀察
+目的：確認新增 Verve JFrog Maven repository 後，legacy dependencies 是否能解析並完成 `untiedDebug` APK 打包。
+操作：
+- 提交 `ci: add legacy dependency repository`，將 Verve JFrog Maven repository 加入 root 與 app Gradle repositories。
+- 推送到 `origin/feature/github-actions`，觸發 run `27145248343`。
+- 使用 `gh run watch 27145248343 --exit-status` 觀察 job 狀態。
+- 使用 `gh run view 27145248343 --log-failed` 讀取失敗 log。
+結果：
+- `:app:dataBindingMergeDependencyArtifactsUntiedDebug` 已通過，代表 `com.mtramin:rxfingerprint:2.2.1` 與 `com.mlsdev.rximagepicker:library:2.1.5` 已可解析。
+- job 繼續執行到 `:app:checkUntiedDebugDuplicateClasses` 才失敗，因此本次仍沒有 APK artifact。
+問題：
+- `com.google.common.util.concurrent.ListenableFuture` 同時存在於 `com.google.guava:guava:20.0` 與 `com.google.guava:listenablefuture:1.0`。
+- 這是舊 Google API client 與 AndroidX dependency transitives 混用時常見的 duplicate class 問題。
+處置：
+- 在 app Gradle configuration 中全域排除 `com.google.guava:listenablefuture`，保留既有 `guava:20.0`。
+後續：提交 duplicate class 修正並推送，觀察下一次 GitHub Actions run 是否成功產出 `untiedDebug` APK artifact。
+
 ## 2026-06-07：專案初始化與 Git 流程重整
 
 環境：本地開發環境 (macOS)
