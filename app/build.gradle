@@ -114,6 +114,10 @@ android {
         test {
             resources.srcDirs += ['src/test/resources']
         }
+        untied {
+            java.srcDirs += ['src/googleplay/java']
+            res.srcDirs += ['src/googleplay/res']
+        }
     }
     packagingOptions {
         resources {

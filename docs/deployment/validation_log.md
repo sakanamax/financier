@@ -80,6 +80,25 @@
 - 在 app Gradle configuration 中全域排除 `com.google.guava:listenablefuture`，保留既有 `guava:20.0`。
 後續：提交 duplicate class 修正並推送，觀察下一次 GitHub Actions run 是否成功產出 `untiedDebug` APK artifact。
 
+## 2026-06-08：GitHub Actions duplicate class 修正後第四次驗證失敗
+
+環境：GitHub Actions `ubuntu-latest` runner；本地使用 `gh run watch` 與 `gh run view --log-failed` 觀察
+目的：確認排除 `com.google.guava:listenablefuture` 後，`untiedDebug` 是否能完成編譯與打包。
+操作：
+- 提交 `ci: exclude duplicate listenablefuture dependency`。
+- 推送到 `origin/feature/github-actions`，觸發 run `27145642735`。
+- 使用 `gh run watch 27145642735 --exit-status` 觀察 job 狀態。
+- 使用 `gh run view 27145642735 --log-failed` 讀取失敗 log。
+結果：
+- `:app:checkUntiedDebugDuplicateClasses` 已通過，代表 duplicate class 問題已解除。
+- job 繼續執行到 `:app:kaptUntiedDebugKotlin` 才失敗，因此本次仍沒有 APK artifact。
+問題：
+- `untied` flavor 找不到 `Export` 與 `ImportExportAsyncTask`。
+- 檢查 source sets 後確認 `untied` 只有 `AndroidManifest.xml`，但 Google Drive / export 相關實作位於 `src/googleplay/java` 與 `src/googleplay/res`。
+處置：
+- 讓 `untied` source set 讀取 `src/googleplay/java` 與 `src/googleplay/res`，但保留 `untied` 自己的 manifest。
+後續：提交 source set 修正並推送，觀察下一次 GitHub Actions run 是否成功產出 `untiedDebug` APK artifact。
+
 ## 2026-06-07：專案初始化與 Git 流程重整
 
 環境：本地開發環境 (macOS)
