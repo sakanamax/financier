@@ -18,6 +18,30 @@
 處置：先完成決策文件化；待 workflow 推送並成功後，再補實際驗證紀錄。
 後續：推送 `feature/github-actions`，確認 Actions artifact，必要時建立個人 fork 的 unofficial GitHub Release。
 
+## 2026-06-08：GitHub Actions APK 打包首次驗證失敗
+
+環境：GitHub Actions `ubuntu-latest` runner；本地使用 GitHub REST API 與瀏覽器觀察
+目的：推送 `feature/github-actions`，確認 GitHub Actions 是否能成功執行 debug APK 打包並產出 APK artifact。
+操作：
+- 將本地 `feature/github-actions` rebase 到遠端同名分支後推送到 `origin`。
+- 觸發 workflow：`Android CI (Auto Build APK)`。
+- 透過 GitHub REST API 查詢 run `27143667309` 狀態。
+- 透過瀏覽器打開 job 頁面觀察 job 與 annotations。
+結果：
+- push 成功，遠端分支更新到 commit `41a97df`。
+- workflow run 已觸發，網址：`https://github.com/sakanamax/financier/actions/runs/27143667309`。
+- job `Build APK` 失敗；成功的 steps 包含 checkout、JDK 17 setup、`chmod +x gradlew`。
+- 失敗 step 為 `Build Debug APK`，`Upload Debug APK Artifact` 被 skipped，因此本次沒有 APK artifact。
+問題：
+- 未登入 GitHub 的瀏覽器與未授權的 GitHub REST API 只能看到 annotation，無法讀取完整 Gradle log。
+- 本機 `gh auth status` 顯示 token invalid，暫時無法用 `gh run view --log` 取得詳細錯誤。
+- GitHub annotation 顯示 `Build Debug APK` 以 exit code 1 結束；另有 Node.js 20 deprecation warning，但該 warning 不是目前失敗原因。
+- 重新登入 `gh` 後取得完整 log，確認失敗原因是 `assembleDebug` 嘗試建置 `fdroidDebug`，但 `:app:fdroidDebugCompileClasspath` 找不到 `com.mtramin:rxfingerprint:2.2.1` 與 `com.mlsdev.rximagepicker:library:2.1.5`。
+處置：
+- 暫不標記 GitHub Actions 打包任務完成。
+- 將 workflow 的 Gradle 指令從 `./gradlew assembleDebug` 改為 `./gradlew assembleUntiedDebug`，先產出符合自用 cloud sync 驗證目標的 APK，避免被非目標 `fdroid` flavor 阻塞。
+後續：由使用者決定提交時機；提交並推送後重新觀察下一次 GitHub Actions run 是否成功產出 artifact。
+
 ## 2026-06-07：專案初始化與 Git 流程重整
 
 環境：本地開發環境 (macOS)

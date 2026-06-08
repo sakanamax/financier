@@ -31,7 +31,7 @@ git push origin feature/github-actions
 預期結果：
 - GitHub Actions 產生一筆新的 workflow run。
 - Workflow 名稱為 `Android CI (Auto Build APK)`。
-- `Build Debug APK` step 會執行 `./gradlew assembleDebug`。
+- `Build Debug APK` step 會執行 `./gradlew assembleUntiedDebug`。
 
 使用 GitHub CLI 查看最近的 workflow run：
 
@@ -51,7 +51,7 @@ gh run download
 
 預期結果：
 - 下載到包含 debug APK 的 artifact 目錄。
-- APK 來源應對應 `app/build/outputs/apk/**/*.apk`。
+- APK 來源應對應 `app/build/outputs/apk/**/*.apk`，目前主要目標是 `untiedDebug` APK。
 
 注意：Actions artifact 主要供自己測試。若要提供給 upstream Issue #25 的其他使用者，應建立個人 fork 的 GitHub Release，並標示為 unofficial test build。
 
@@ -64,7 +64,7 @@ find . -name '*.apk' -type f
 
 預期結果：
 - 至少列出一個 APK 檔案。
-- 若 `assembleDebug` 同時打出多個 flavor，可能會看到 `untied`、`googleplay`、`fdroid` 等 debug APK。
+- 目前 workflow 只建置 `untiedDebug`，預期應看到 `untied` flavor 的 debug APK。
 
 安裝前注意事項：
 - 個人 fork 產出的 APK 不是官方版本。
