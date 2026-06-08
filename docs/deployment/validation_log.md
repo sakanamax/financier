@@ -42,6 +42,25 @@
 - 將 workflow 的 Gradle 指令從 `./gradlew assembleDebug` 改為 `./gradlew assembleUntiedDebug`，先產出符合自用 cloud sync 驗證目標的 APK，避免被非目標 `fdroid` flavor 阻塞。
 後續：由使用者決定提交時機；提交並推送後重新觀察下一次 GitHub Actions run 是否成功產出 artifact。
 
+## 2026-06-08：GitHub Actions `untiedDebug` 打包第二次驗證失敗
+
+環境：GitHub Actions `ubuntu-latest` runner；本地使用 `gh run view --log-failed` 觀察
+目的：確認改用 `assembleUntiedDebug` 後，是否能避開 `fdroidDebug` flavor 並產出 APK artifact。
+操作：
+- 提交 `ci: build untied debug APK`，將 workflow 指令改為 `./gradlew assembleUntiedDebug`。
+- 推送到 `origin/feature/github-actions`，觸發 run `27144396298`。
+- 使用 `gh run view 27144396298 --log-failed` 讀取失敗 log。
+結果：
+- workflow 成功進入 `untiedDebug` variant。
+- job 仍在 `Build Debug APK` step 失敗，因此沒有 APK artifact。
+問題：
+- `:app:untiedDebugCompileClasspath` 找不到 `com.mtramin:rxfingerprint:2.2.1` 與 `com.mlsdev.rximagepicker:library:2.1.5`。
+- 直接檢查 Maven Central 與 JCenter redirect 後，確認這兩個座標目前無法從既有 repository 解析。
+處置：
+- 確認 Verve JFrog Maven repository 仍提供上述兩個 legacy artifacts。
+- 在 root 與 app Gradle repositories 加入 `https://verve.jfrog.io/artifactory/verve-gradle-release/`。
+後續：提交 repository 修正並推送，觀察第三次 GitHub Actions run 是否成功產出 `untiedDebug` APK artifact。
+
 ## 2026-06-07：專案初始化與 Git 流程重整
 
 環境：本地開發環境 (macOS)

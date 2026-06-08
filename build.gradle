@@ -22,6 +22,8 @@ allprojects {
         google()
         jcenter()
         mavenCentral()
+        // Legacy Android artifacts that were previously resolved from JCenter.
+        maven { url 'https://verve.jfrog.io/artifactory/verve-gradle-release/' }
     }
 }
 

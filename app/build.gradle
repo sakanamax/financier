@@ -2,6 +2,8 @@ repositories {
     google()
     mavenCentral()
     maven { url 'https://jitpack.io' }
+    // Legacy Android artifacts that were previously resolved from JCenter.
+    maven { url 'https://verve.jfrog.io/artifactory/verve-gradle-release/' }
 }
 
 apply plugin: 'com.android.application'
