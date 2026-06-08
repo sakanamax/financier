@@ -249,7 +249,7 @@ class MenuListFragment: ListFragment() {
                 onDriveBackupError(DriveBackupError(e.message))
             }
         } else {
-            GooglePlayServicesUtil.getErrorDialog(connectionResult.errorCode, requireActivity(), 0).show()
+            GooglePlayServicesUtil.getErrorDialog(connectionResult.errorCode, requireActivity(), 0)?.show()
         }
     }
 

@@ -99,6 +99,28 @@
 - 讓 `untied` source set 讀取 `src/googleplay/java` 與 `src/googleplay/res`，但保留 `untied` 自己的 manifest。
 後續：提交 source set 修正並推送，觀察下一次 GitHub Actions run 是否成功產出 `untiedDebug` APK artifact。
 
+## 2026-06-08：GitHub Actions source set 修正後第五次驗證失敗
+
+環境：GitHub Actions `ubuntu-latest` runner；本地使用 `gh run list` 與 `gh run view --log-failed` 觀察
+目的：確認 `untied` 讀取 `googleplay` source set 後，是否能完成 Kotlin 編譯與 APK 打包。
+操作：
+- 提交 `ci: include googleplay sources in untied build`。
+- 推送到 `origin/feature/github-actions`，觸發 run `27146001174`。
+- `gh run watch` 期間 GitHub annotations API 回傳 HTTP 500，因此改用 `gh run list` 輪詢狀態。
+- 使用 `gh run view 27146001174 --log-failed` 讀取失敗 log。
+結果：
+- `:app:kaptUntiedDebugKotlin` 已通過，代表 `untied` source set 已能讀取 Google Play / Google Drive 相關來源。
+- job 繼續執行到 `:app:compileUntiedDebugKotlin` 才失敗，因此本次仍沒有 APK artifact。
+問題：
+- `PreferencesActivity.kt` 的 `onDisplayPreferenceDialog`、`onPreferenceStartScreen` 簽名與目前 AndroidX Preference API 的 non-null 型別不一致。
+- `PreferencesActivity.kt` 仍將 nullable `context` 傳入需要 non-null `Context` 的 API。
+- `MenuListFragment.kt` 直接呼叫 nullable dialog 的 `show()`。
+處置：
+- 將相關 override 簽名改為 non-null。
+- 將 Fragment `context` 呼叫改為 `requireContext()`。
+- 將 nullable dialog 呼叫改為 safe call。
+後續：提交 Kotlin 相容性修正並推送，觀察下一次 GitHub Actions run 是否成功產出 `untiedDebug` APK artifact。
+
 ## 2026-06-07：專案初始化與 Git 流程重整
 
 環境：本地開發環境 (macOS)

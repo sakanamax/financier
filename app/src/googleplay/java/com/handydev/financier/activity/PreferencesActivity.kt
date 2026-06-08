@@ -171,7 +171,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), SharedPreferences.OnShare
         pinDialog?.dismiss()
     }
 
-    override fun onDisplayPreferenceDialog(preference: Preference?) {
+    override fun onDisplayPreferenceDialog(preference: Preference) {
         if (preference is PinDialogPreference) {
             pinPreference = preference
             val pinView = PinView(context, this, R.layout.lock)
@@ -296,18 +296,18 @@ class PreferencesFragment: PreferenceFragmentCompat(), SharedPreferences.OnShare
     override fun onPause() {
         super.onPause()
         if(rootKey == null) {
-            PreferenceManager.getDefaultSharedPreferences(context)
+            PreferenceManager.getDefaultSharedPreferences(requireContext())
                 .unregisterOnSharedPreferenceChangeListener(this)
-            PinProtection.lock(context)
+            PinProtection.lock(requireContext())
         }
     }
 
     override fun onResume() {
         super.onResume()
         if(rootKey == null) {
-            PreferenceManager.getDefaultSharedPreferences(context)
+            PreferenceManager.getDefaultSharedPreferences(requireContext())
                 .registerOnSharedPreferenceChangeListener(this)
-            PinProtection.unlock(context)
+            PinProtection.unlock(requireContext())
             dropbox?.completeAuth()
             linkToDropbox()
         }
@@ -339,11 +339,11 @@ class PreferencesActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPref
     }
 
     override fun onPreferenceStartScreen(
-        caller: PreferenceFragmentCompat?,
-        pref: PreferenceScreen?
+        caller: PreferenceFragmentCompat,
+        pref: PreferenceScreen
     ): Boolean {
         val intent = Intent(this@PreferencesActivity, PreferencesActivity::class.java)
-        intent.putExtra(STARTING_KEY, pref?.key)
+        intent.putExtra(STARTING_KEY, pref.key)
         startActivity(intent)
         return true
     }
