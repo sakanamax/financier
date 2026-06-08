@@ -8,7 +8,7 @@
 ## CI/CD 與自動化
 
 - [ ] **設定 GitHub Actions 自動打包 APK** `[Branch: feature/github-actions]`：建立可下載 APK 的測試發布流程，用來驗證 Google Drive / Dropbox 同步修復，並在需要時提供給 Issue #25 使用者測試。→ [`docs/github-actions-setup.md`](./docs/github-actions-setup.md)
-  - [ ] 將變更推送至 GitHub，並在 Actions 頁面驗證編譯成功、產出 APK 檔
+  - [x] 將變更推送至 GitHub，並在 Actions 頁面驗證編譯成功、產出 APK 檔
   - [ ] 評估是否將驗證過的 APK 發布到個人 fork 的 GitHub Release，並清楚標示為 unofficial test build
   - [ ] （進階）評估串接 Firebase Test Lab，自動執行 Robo 測試以驗證 APK 穩定性
 

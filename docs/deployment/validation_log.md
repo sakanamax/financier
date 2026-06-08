@@ -121,6 +121,30 @@
 - 將 nullable dialog 呼叫改為 safe call。
 後續：提交 Kotlin 相容性修正並推送，觀察下一次 GitHub Actions run 是否成功產出 `untiedDebug` APK artifact。
 
+## 2026-06-08：GitHub Actions 第六次驗證成功產出 APK
+
+環境：GitHub Actions `ubuntu-latest` runner；本地使用 `gh run watch` 與 `gh run download` 觀察
+目的：確認 Kotlin 相容性修正後，`untiedDebug` 是否能完成打包並上傳 APK artifact。
+操作：
+- 提交 `ci: fix untied Kotlin compile errors`。
+- 推送到 `origin/feature/github-actions`，觸發 run `27146328437`。
+- 使用 `gh run watch 27146328437 --exit-status` 觀察 job 狀態。
+- 使用 `gh run download 27146328437 --name financier-debug-apks` 下載 artifact。
+- 使用 `find . -name '*.apk' -type f` 確認 APK 檔案。
+結果：
+- run `27146328437` 成功完成，網址：`https://github.com/sakanamax/financier/actions/runs/27146328437`。
+- `Build Debug APK` step 成功執行 `./gradlew assembleUntiedDebug`。
+- `Upload Debug APK Artifact` step 成功上傳 artifact。
+- 本地確認 APK 路徑：`untied/debug/Financier.apk`。
+問題：
+- Actions 顯示 Node.js 20 deprecation warning，來源是 `actions/checkout@v4`、`actions/setup-java@v4`、`actions/upload-artifact@v4`。目前不影響 build，但未來 GitHub runner 預設 Node 版本變更時需要追蹤 action 更新。
+處置：
+- 將 GitHub Actions 打包與 artifact 驗證項目標記完成。
+後續：
+- 安裝 `untied/debug/Financier.apk` 到測試裝置前，先備份 Financier 資料。
+- 實機驗證 Google Drive / Dropbox 同步修復。
+- 驗證可用後，再評估是否建立個人 fork 的 unofficial GitHub Release。
+
 ## 2026-06-07：專案初始化與 Git 流程重整
 
 環境：本地開發環境 (macOS)

@@ -46,12 +46,19 @@ gh run list --branch feature/github-actions --limit 5
 下載 Actions artifact：
 
 ```bash
-gh run download
+gh run download <run-id> --name financier-debug-apks
 ```
 
 預期結果：
 - 下載到包含 debug APK 的 artifact 目錄。
-- APK 來源應對應 `app/build/outputs/apk/**/*.apk`，目前主要目標是 `untiedDebug` APK。
+- 目前 artifact 解壓後的 APK 路徑為 `untied/debug/Financier.apk`。
+
+範例：
+
+```bash
+gh run download 27146328437 --name financier-debug-apks
+find . -name '*.apk' -type f
+```
 
 注意：Actions artifact 主要供自己測試。若要提供給 upstream Issue #25 的其他使用者，應建立個人 fork 的 GitHub Release，並標示為 unofficial test build。
 
@@ -64,7 +71,7 @@ find . -name '*.apk' -type f
 
 預期結果：
 - 至少列出一個 APK 檔案。
-- 目前 workflow 只建置 `untiedDebug`，預期應看到 `untied` flavor 的 debug APK。
+- 目前 workflow 只建置 `untiedDebug`，預期應看到 `untied/debug/Financier.apk`。
 
 安裝前注意事項：
 - 個人 fork 產出的 APK 不是官方版本。
